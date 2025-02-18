@@ -1,0 +1,115 @@
+<p>login works!</p>
+<p>test works!</p>
+<div class="container">
+    <div class="left">
+      <!-- Registration Form -->
+      <div *ngIf="showRegistrationPage">
+        <h2>Sign Up</h2>
+        <form (ngSubmit)="create()" #registrationForm="ngForm">
+          <!-- Input fields for Username, Email, Phone, Password, Confirm Password -->
+          <div class="input-group">
+            <label for="Username">Username</label>
+            <i class="fas fa-user"></i>
+            <input [(ngModel)]="Username" name="Username" id="Username" placeholder="Username" minlength="6"  #username="ngModel" pattern="^[a-zA-Z0-9._]{6,15}$" required />
+          </div>
+          <div *ngIf="username.invalid && username.touched" style="color:red;">
+            <small>Username must be 6-15 characters, with letters, numbers, dots, or underscores only.</small>
+          </div>
+          <div class="input-group">
+            <label for="Email">Email</label>
+            <input [(ngModel)]="Email" name="Email" type="email" placeholder="Email" #email="ngModel" pattern="^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" required />
+          </div>
+          <div *ngIf="email.invalid && email.touched" style="color:red;">
+            <small>Please enter a valid email address.</small>
+          </div>
+          <div class="input-group">
+            <label for="Phonenumber">Phone Number</label>
+            <input [(ngModel)]="Phonenumber" placeholder="Phone Number" id="Phonenumber" #phone="ngModel" name="Phonenumber" type="tel" required />
+          </div>
+          <div *ngIf="phone.invalid && phone.touched" style="color:red;">
+            <small>Enter a valid phone number (e.g., 1234567890).</small>
+          </div>
+          <div class="input-group">
+            <label for="Password">Password</label>
+            <input [(ngModel)]="Password" name="Password" pattern="^\+?[1-9]\d{1,11}$"  maxlength="10" #password="ngModel" type="password" required />
+          </div>
+          <div *ngIf="password.invalid && password.touched" style="color:red;">
+            <small>Password must be at least 8 characters long.</small>
+          </div>
+          <div class="input-group">
+            <label for="Confirmpassword">Confirm Password</label>
+            <input [(ngModel)]="Confirmpassword" name="Confirmpassword" type="password" minlength="8" #confirmPassword="ngModel" required />
+          </div>
+          <div *ngIf="confirmPassword.invalid && confirmPassword.touched" style="color:red;">
+            <small>Passwords must match.</small>
+          </div>
+          
+          <button type="submit" [disabled]="registrationForm.invalid">Register</button>
+          <p (click)="showLoginForm()">Already have an account? Login</p>
+        </form>
+      </div>
+  
+      <!-- Login Form -->
+      <div *ngIf="showLoginPage">
+        <h2>Login</h2>
+        <form (ngSubmit)="login()" #loginForm="ngForm">
+          <div class="input-group">
+            <label for="Username">Email</label>
+            <input [(ngModel)]="Email" name="Email" required #email="ngModel" pattern="^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" />
+          </div>
+          <div *ngIf="email.invalid && email.touched" style="color:red;">
+            <small>Please enter a valid email address.</small>
+          </div>
+          <div class="input-group">
+            <label for="Password">Password</label>
+            <input [(ngModel)]="Password" name="Password" type="password" pattern="^\+?[1-9]\d{1,11}$"  maxlength="10" #password="ngModel" type="password" required />
+          </div>
+          <div *ngIf="password.invalid && password.touched" style="color:red;">
+            <small>Password must be at least 8 characters long.</small>
+          </div>
+          <button type="submit" [disabled]="loginForm.invalid">Login</button>
+          <p (click)="showForgotPasswordForm()">Forgot Password?</p>
+          <p (click)="showRegistrationForm()">Create a new account</p>
+        </form>
+      </div>
+  
+      <!-- Forgot Password Form -->
+      <div *ngIf="showForgotPasswordPage">
+        <h2>Forgot Password</h2>
+        <div class="input-group">
+            <label for="Username">Email</label>
+            <input [(ngModel)]="Email" name="Email" required />
+          </div>
+        
+        <button (click)="ForgetPassword()">Send OTP</button>
+        <p (click)="showLoginForm()">Back to Login</p>
+      </div>
+  
+      <!-- OTP Form -->
+      <div *ngIf="showOTPPage">
+        <h2>Enter OTP</h2>
+        <input [(ngModel)]="enteredOTP" name="otp" required />
+        <button (click)="verifyOTP()">Verify OTP</button>
+        <p *ngIf="otpInvalid" style="color:red;">Invalid OTP</p>
+      </div>
+  
+      <!-- New Password Form -->
+      <div *ngIf="showNewPasswordPage">
+        <h2>Set New Password</h2>
+        <input [(ngModel)]="NewPassword" name="NewPassword" type="password" required />
+        <input [(ngModel)]="ConfirmPassword" name="ConfirmPassword" type="password" required />
+        <button (click)="resetPassword()">Set New Password</button>
+        
+      </div>
+    </div>
+    <div class="right">
+        <div class="carousel">
+          <div class="carousel-images">
+            <img src="\assets\download (1).jpg" alt="Image 1" class="carousel-image">
+            <img src="\assets\download.jpg" alt="Image 2" class="carousel-image">
+            <img src="\assets\images.jpg" alt="Image 3" class="carousel-image">
+          </div>
+        </div>
+      </div>
+  </div>
+  

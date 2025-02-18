@@ -1,0 +1,88 @@
+<p>home works!</p>
+<div class="container">
+    <!-- Sidebar (20%) -->
+    <div class="box box1">
+      <div class="profile-pic">Profile</div>
+  
+  
+      <ul class="menu-list">
+        <li>Profile</li>
+        <li routerLink="/bills">File records</li>
+        <li></li>
+      </ul>
+  
+  
+      <div class="footer">Footer</div>
+    </div>
+  
+  
+    <!-- Middle Section (50%) -->
+    <div class="box box2">
+      <!-- Centered Dashed Box -->
+      <div class="centered-box">
+        <h2>Upload Your Files</h2>
+        <p>Choose to upload or capture live</p>
+        <div class="btn-group">
+          <button class="btn" [routerLink]="['/uploadimage']" >📷 Access Camera</button>
+          <button class="btn" [routerLink]="['/uploadfile']">📂 Upload Files</button>
+        </div>
+      </div>
+  
+  
+      <!-- Feedback Section -->
+      <div class="feedback-container">
+       
+  
+  
+        <div class="feedback-card">
+          <div class="feedback-profile-pic"></div>
+          <div class="feedback-content">
+            <p>"Great service! Really happy with the experience."</p>
+            <button class="feedback-btn">Add Feedback</button>
+          </div>
+        </div>
+  
+  
+        <div class="feedback-card">
+          <div class="feedback-profile-pic"></div>
+          <div class="feedback-content">
+            <p>"Very user-friendly and easy to navigate."</p>
+            <button class="feedback-btn">Add Feedback</button>
+          </div>
+        </div>
+  
+  
+        <div class="feedback-card">
+          <div class="feedback-profile-pic"></div>
+          <div class="feedback-content">
+            <p>"Highly recommended! Excellent support."</p>
+            <button class="feedback-btn">Add Feedback</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+  
+    <!-- Right Section (Remaining Width) -->
+    <div class="box box3">
+      <h3>Additional Content</h3>
+  
+  
+      <!-- List Items -->
+      <ul class="extra-list">
+        <li>Feature 1</li>
+        <li>Feature 2</li>
+        <li>Feature 3</li>
+      </ul>
+  
+  
+      <!-- Video -->
+      <div class="video-container">
+        <video controls>
+          <source src="video.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+      </div>
+    </div>
+  </div>
+  
