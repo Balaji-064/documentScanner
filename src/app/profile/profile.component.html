@@ -1,12 +1,11 @@
-<p>profile works!</p>
 <div class="profile-container">
     <!-- Edit Button -->
-    <button class="edit-btn">Edit</button>
+    <button class="edit-btn" (click)="editProfile()" >Edit</button>
 
 
     <!-- Left Side: Profile Photo -->
     <div class="profile-left">
-       
+
         <input type="file" (change)="onImageChange($event)" />
         <img *ngIf="images" [src]="images" alt="Profile" />
     </div>
@@ -18,43 +17,42 @@
             <div class="row">
                 <div class="column">
                     <label for="firstname">First Name:</label>
-                    <input type="text" id="firstname" placeholder="firstname" required>
-                 
+                    <input type="text" id="firstname" [disabled]="isDidableEditing" placeholder="firstname" [(ngModel)]="firstname" required>
+
                 </div>
                 <div class="column">
                     <label for="lastname">Last Name:</label>
-                    <input type="text" id="lastname " placeholder="lastname" required>
+                    <input type="text" id="lastname " [disabled]="isDidableEditing" placeholder="lastname" [(ngModel)]="lastname" required>
                 </div>
             </div>
             <div class="row">
                 <div class="column">
                     <label for="username">Username</label>
-                    <input type="text" id="username"  pattern="^[a-zA-Z0-9._]{6,15}$" placeholder="Username" required>
+                    <input type="text" id="username" pattern="^[a-zA-Z0-9._]{6,15}$" [disabled]="isDidableEditing" placeholder="Username"
+                        [(ngModel)]="username" required>
                 </div>
             </div>
             <div class="row">
                 <div class="column">
                     <label for="email">Email:</label>
-                    <input type="email" id="email" placeholder="enter your email" required>
+                    <input type="email" id="email" disabled="true" placeholder="enter your email" [(ngModel)]="email" required>
                 </div>
             </div>
             <div class="row">
                 <div class="column">
                     <label for="phonenumber">Phone:</label>
-                    <input type="text" id="phonenumber" placeholder="phonenumber" required>
+                    <input type="text" id="phonenumber" [disabled]="isDidableEditing" placeholder="phonenumber" [(ngModel)]="phone" required>
                 </div>
             </div>
             <div class="row">
                 <div class="column">
                     <label for="gender">Gender:</label>
-                    <input type="text" id="gender">
+                    <input type="text" id="gender" [disabled]="isDidableEditing" [(ngModel)]="gender">
                 </div>
             </div>
         </div>
         <div class="save-btn">
-            <button>Save Changes</button>
+            <button (click)="saveDetail()" [disabled]="isDidableEditing" >Save Changes</button>
         </div>
     </div>
 </div>
-
-

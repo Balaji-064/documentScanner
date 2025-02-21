@@ -1,14 +1,12 @@
-<p>accessing-camera works!</p>
 <div class="container">
-    <!-- Left Side (Video Feed and Controls) -->
-     
-    <div class="left-side">
-      <!-- Video Feed from the Camera -->
-       <div class="mainvideo-container">
+  <!-- Left Side (Video Feed and Controls) -->
+  <div class="left-side">
+    <!-- Video Feed from the Camera -->
+    <div class="mainvideo-container">
       <div class="video-container">
         <video #video width="100%" height="auto" autoplay></video>
       </div>
-  
+
       <!-- Buttons for Actions -->
       <div class="controls">
         <button (click)="capturePhoto()">Capture Photo</button>
@@ -16,39 +14,39 @@
         <button (click)="extractTextFromImage(croppedImage)">Extract Text (OCR)</button>
       </div>
     </div>
-  
-      <!-- Chatbot Below Video -->
-      <div class="chat-container">
-        <div class="chat-header">
-          <h2>Chat with AI</h2>
-        </div>
-  
-        <div class="chat-box">
-          <div *ngFor="let message of messages; let i=index" class="chat-message">
-            <div class="user-message">
-              <i class="fa-solid fa-user"></i> {{ messages[i].sender }}
-            </div>
-            <div class="ai-message">
-              <i class="fa-regular fa-comment-dots"></i> {{messages[i].ai}}
-            </div>
+
+    <!-- Chatbot Below Video -->
+    <div class="chat-container">
+      <div class="chat-header">
+        <h2>Chat with AI</h2>
+      </div>
+
+      <div class="chat-box">
+        <div *ngFor="let message of messages; let i=index" class="chat-message">
+          <div class="user-message">
+            <i class="fa-solid fa-user"></i> {{ messages[i].sender }}
+          </div>
+          <div class="ai-message">
+            <i class="fa-regular fa-comment-dots"></i> {{messages[i].ai}}
           </div>
         </div>
-  
-        <div class="input-area">
-          <input [(ngModel)]="userPrompt" type="text" placeholder="Type your message..." />
-          <button (click)="generateResponse()">Send</button>
-        </div>
       </div>
-    </div>
-  
-    <!-- Right Side (Captured Image and Cropped Image) -->
-    <div class="right-side">
-      <!-- Display Captured Image -->
-      <canvas #canvas (mousedown)="onMouseDown($event)" (mousemove)="onMouseMove($event)"
-        (mouseup)="onMouseUp($event)"></canvas>
-      <div *ngIf="croppedImage">
-        <h3>Cropped Image</h3>
-        <img [src]="croppedImage" alt="Cropped Image" class="cropped-image">
+
+      <div class="input-area">
+        <input [(ngModel)]="this.extractedText" type="text" placeholder="Type your message..." />
+        <button (click)="generateResponse()">Send</button>
       </div>
     </div>
   </div>
+
+  <!-- Right Side (Captured Image and Cropped Image) -->
+  <div class="right-side">
+    <!-- Display Captured Image -->
+    <canvas #canvas (mousedown)="onMouseDown($event)" (mousemove)="onMouseMove($event)"
+      (mouseup)="onMouseUp($event)"></canvas>
+    <div *ngIf="croppedImage">
+      <h3>Cropped Image</h3>
+      <img [src]="croppedImage" alt="Cropped Image" class="cropped-image">
+    </div>
+  </div>
+</div>

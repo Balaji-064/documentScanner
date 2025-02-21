@@ -11,7 +11,7 @@ import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-accessing-camera',
   standalone: true,
-  imports: [RouterModule,CommonModule,FormsModule],
+  imports: [RouterModule, CommonModule, FormsModule],
   templateUrl: './accessing-camera.component.html',
   styleUrl: './accessing-camera.component.css'
 })
@@ -24,7 +24,7 @@ export class AccessingCameraComponent {
 
   // Send message function
 
-  
+
 
   streamedOutput: string = '';
   constructor(private http: HttpClient) { }
@@ -85,12 +85,12 @@ export class AccessingCameraComponent {
       console.error('Error accessing camera:', error);
     }
   }
-  
+
 
   stopCamera(): void {
     if (this.stream) {
       this.stream.getTracks().forEach((track) => track.stop());
-      
+
     }
   }
 
@@ -172,11 +172,11 @@ export class AccessingCameraComponent {
     console.log('Cropped Image Data URL:', this.croppedImage, croppedCanvas); // Check the cropped image data URL
 
     // Enhance the quality of the cropped image
-   
+
   }
 
   // Preprocess Image for better OCR accuracy
-  async preprocessImage(imageData: string,factor:number): Promise<string> {
+  async preprocessImage(imageData: string, factor: number): Promise<string> {
     const img = new Image();
     img.src = imageData;
     await new Promise(resolve => img.onload = resolve);
@@ -217,7 +217,7 @@ export class AccessingCameraComponent {
     clahe.delete();
     kernel.delete();
 
-    return preprocessedImage 
+    return preprocessedImage
   }
 
   // Function to extract text using Tesseract.js

@@ -10,7 +10,7 @@ import { ProfileComponent } from './profile/profile.component';
 import { BillsComponent } from './bills/bills.component';
 
 export const routes: Routes = [
-    {path:'landingpage',component:LandingPageComponent},
+    {path:'',component:LandingPageComponent},
     {path:'home',component:HomeComponent},
     {path:'uploadfiles',component:UploadFilesComponent},
     {path:'imagetopdfconvertor',component:ImageToPdfConvertorComponent},

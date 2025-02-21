@@ -4,34 +4,39 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { CouchdbService } from '../couchdb.service';
 import { Router } from '@angular/router';
+import { v4 as uuidv4 } from 'uuid';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [RouterModule,FormsModule,CommonModule],
+  imports: [RouterModule, FormsModule, CommonModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
 export class LoginComponent {
+  loginTimes: string = '';
   Username: string = '';
-  userId:string=''
+
   Phonenumber: string = '';
   Email: string = '';
   Password: string = '';
+  userid: string = '';
   Confirmpassword: string = '';
+  firstname: string = '';
+  lastname: string = '';
   NewPassword: string = '';
   ConfirmPassword: string = '';
   flag: boolean = false;
-  dob: Date =new Date();
+  dob: Date = new Date();
   gender: string = '';
   images: string = '';
-  loginDetails: number = 0;
+  loginDetails: string = '';
   passwordMismatch: boolean = true;
   otpInvalid: boolean = false;
   otpTouched: boolean = false;
   enteredOTP: string = '';
   generatedOTP: string = '';
-  routerVariable=inject(Router)
+  routerVariable = inject(Router)
 
   // Flags for form toggling
   showRegistrationPage: boolean = false;
@@ -40,6 +45,24 @@ export class LoginComponent {
   showOTPPage: boolean = false;
   showNewPasswordPage: boolean = false;
 
+  generateuuid() {
+    this.userid = `user_2_${uuidv4()}`
+
+    console.log("inside the generateuuid");
+    console.log(this.userid);
+
+
+  }
+  generateuuidlogin() {
+    this.loginTimes = `logindetails_2_${uuidv4()}`
+    console.log("inside the generateuuidlogin");
+    console.log(this.loginTimes);
+
+
+  }
+  generateuuidlogindetails() {
+    this.loginDetails = uuidv4()
+  }
   constructor(private couch: CouchdbService) { }
 
   // Form toggling methods
@@ -98,20 +121,26 @@ export class LoginComponent {
         if (emailExists) {
           alert('The email address is already in use. Please use a different email.');
         } else {
+          this.generateuuid()
+          this.generateuuidlogindetails()
           const data: any = {
-            _id: `user_000_${this.Phonenumber}`,
-            username: this.Username,
-            phonenumber: this.Phonenumber,
-            email: this.Email,
-            password: this.Password,
-            dob:this.dob,
-            images: this.images,
-            gender: this.gender,
-            loginDetails: this.loginDetails,
-            type: 'users',
+            _id: this.userid,
+            data: {
+              username: this.Username,
+              phonenumber: this.Phonenumber,
+              email: this.Email,
+              password: this.Password,
+              dob: this.dob,
+              images: this.images,
+              gender: this.gender,
+              loginDetails: this.Email,
+              firstname: this.firstname,
+              lastname: this.lastname,
+              type: 'users',
+            }
           };
 
-          
+
           this.couch.addUser(data).subscribe({
             next: (response) => {
               alert('User added successfully');
@@ -122,7 +151,7 @@ export class LoginComponent {
               alert('Error occurred while adding user');
             },
           });
-          
+
         }
       },
       error: () => {
@@ -133,40 +162,44 @@ export class LoginComponent {
 
   // User Login
   login() {
-    const loginDetails:any={
-      _id: `loginDetails_000_${this.Phonenumber}`,
-      loginDetails:this.loginDetails,
-      dob:this.dob,
-      type:'logindetails'
-     }
+    this.generateuuidlogin()
+    const loginDetails: any = {
+      _id: this.loginTimes,
+      data: {
+        loginDetails: this.Email,
+        dob: this.dob,
+        type: "logindetails"
+      }
+    }
 
-    this.couch.getUserDetails().subscribe({
+    this.couch.validateUserByEmail(this.Email).subscribe({
       next: (response: any) => {
         let status = false;
         console.log(response)
         response.rows.forEach((e: any) => {
-          if (e.value.email === this.Email && e.value.password === this.Password) {
+          if (e.value.data.email === this.Email && e.value.data.password === this.Password) {
             status = true;
-            localStorage.setItem(this.userId,e.value._id)
+            localStorage.setItem("userId", e.value._id)
+            console.log(this.userid)
             this.couch.addLoginDetails(loginDetails).subscribe({
               next: (response) => {
                 alert('loginDetails added successfully');
-                
+
               },
               error: () => {
                 alert('Error occurred loginDetails');
               },
             });
-  
-            
+
+
           }
         });
 
         if (status) {
           alert('Login successful');
           // Navigate to another page after login
-          console.log(localStorage.getItem(this.userId))
-          this.routerVariable.navigate(['camera'])
+          console.log(localStorage.getItem(this.userid))
+          this.routerVariable.navigate(['home'])
         } else {
           alert('Login failed');
         }
@@ -196,9 +229,6 @@ export class LoginComponent {
   verifyOTP() {
     if (this.enteredOTP === this.generatedOTP) {
       this.showNewPasswordForm(); // Show new password form
-    } else {
-      this.otpInvalid = true;
-      this.otpTouched = true;
     }
   }
 
@@ -208,19 +238,21 @@ export class LoginComponent {
       // If the passwords match, update the password in the database
       this.couch.getUserDetails().subscribe({
         next: (response: any) => {
-          const existData = response.rows.map((user: any) => user.value).find((user: any) => user.email === this.Email)
-          const updatedData = { ...existData, password: this.NewPassword }
+          const existData = response.rows.map((user: any) => user.value).find((user: any) => user.data.email === this.Email)
+          const updatedData = { ...existData.data, password: this.NewPassword }
           console.log(existData);
           console.log(updatedData);
+          console.log({ ...existData, updatedData });
           
 
-          this.couch.updatePassword(existData._id, updatedData).subscribe({
+
+          this.couch.updatePassword(existData._id, { ...existData, data:updatedData }).subscribe({
             next: (response: any) => {
               alert('Password reset successful');
               // Hide the password reset page and show the login page
               this.showLoginPage = response.value;
               this.showNewPasswordPage = false;
-              this.showLoginPage=true;
+              this.showLoginPage = true;
             },
             error: (error: any) => {
               alert('Error occurred while resetting the password');
@@ -238,10 +270,10 @@ export class LoginComponent {
   resetForm() {
     this.Username = '';
     this.Email = '';
-    this.Password = ''; 
+    this.Password = '';
     this.Confirmpassword = '';
     this.Phonenumber = '';
-   
+
     this.gender = '';
     this.images = '';
   }

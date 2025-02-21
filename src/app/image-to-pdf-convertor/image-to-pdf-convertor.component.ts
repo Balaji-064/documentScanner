@@ -5,7 +5,7 @@ import { jsPDF } from 'jspdf';
 @Component({
   selector: 'app-image-to-pdf-convertor',
   standalone: true,
-  imports: [RouterModule,CommonModule],
+  imports: [RouterModule, CommonModule],
   templateUrl: './image-to-pdf-convertor.component.html',
   styleUrl: './image-to-pdf-convertor.component.css'
 })
@@ -13,7 +13,7 @@ export class ImageToPdfConvertorComponent {
   imageUrls: string[] = []; // Array to store URLs of selected images
   images: HTMLImageElement[] = []; // Array to store Image elements
   currentImageIndex: number = 0;
-  stream:MediaStream|null=null;
+  stream: MediaStream | null = null;
 
   constructor() { }
 
@@ -143,10 +143,10 @@ export class ImageToPdfConvertorComponent {
   deleteImage(index: number): void {
     // Remove the image from the images array
     this.images.splice(index, 1);
-  
+
     // Remove the corresponding URL from the imageUrls array
     this.imageUrls.splice(index, 1);
-  
+
     // Adjust the current image index if needed
     if (this.currentImageIndex >= this.images.length) {
       this.currentImageIndex = this.images.length - 1; // Ensure the index doesn't go out of bounds

@@ -2,9 +2,9 @@ import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import Tesseract from 'tesseract.js';
-import {FormsModule} from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { PdfViewerComponent, PdfViewerModule } from 'ng2-pdf-viewer';
-import{saveAs} from 'file-saver';
+import { saveAs } from 'file-saver';
 import { v4 as uuidv4 } from 'uuid';
 import mammoth from 'mammoth';
 import { CouchdbService } from '../couchdb.service';
@@ -12,7 +12,7 @@ import { CouchdbService } from '../couchdb.service';
 @Component({
   selector: 'app-upload-files',
   standalone: true,
-  imports: [CommonModule,FormsModule,HttpClientModule,PdfViewerModule],
+  imports: [CommonModule, FormsModule, HttpClientModule, PdfViewerModule],
   templateUrl: './upload-files.component.html',
   styleUrl: './upload-files.component.css'
 })
@@ -27,39 +27,36 @@ export class UploadFilesComponent {
   textChunks: string[] = [];
   selectedFormat: string = 'txt';
   selectedSummaryLevel: string = '';
+  base64String: string = ''
+  date: Date = new Date()
+  onlyDate = this.date.toISOString().split("T")[0];
+  documentid: string = ''
+  userid: string = 'user_000'
+  document_name: string = ''
+  document_type: string = ''
+  cropping: boolean = false;
+  startX: number = 0;
+  startY: number = 0;
+  width: number = 0;
+  height: number = 0;
+  croppedImageSrc: string = ''; // For the cropped image
+  img: HTMLImageElement = new Image();
 
 
-  documentid:string=''
-  userid:string='user_000'
-  document_name:string=''
-  document_type:string=''
 
-
- 
   // Process image
   cropCanvas: HTMLCanvasElement;
-  imageSrc: string='';
+  imageSrc: string = '';
   @ViewChild('cropCanvas', { static: false }) Canvas!: ElementRef<HTMLCanvasElement>;
   ctx: CanvasRenderingContext2D | null = null;
-
-
-
-
   fileContent: string = '';
- 
   pageSize: number = 20; // 20 lines per page
-  imageUrl: string='';
- 
-
-
- 
-  constructor(private http: HttpClient,private couch: CouchdbService) {
+  imageUrl: string = '';
+  constructor(private http: HttpClient, private couch: CouchdbService) {
     this.cropCanvas = document.createElement('canvas');
   }
-
-
-  generateuuid(){
-    this.documentid=`document_2_"${uuidv4()}"`;
+  generateuuid() {
+    this.documentid = `document_2_"${uuidv4()}"`;
   }
 
 
@@ -70,12 +67,12 @@ export class UploadFilesComponent {
     if (file) {
       if (file.type.startsWith('image')) {
         this.handleImageUpload(file);
-      // } else if (file.type === 'application/pdf') {
-      //   this.handlePdfUpload(file);
-      this.document_name=file.name;
-      this.document_type=file.type
-     
-     
+        // } else if (file.type === 'application/pdf') {
+        //   this.handlePdfUpload(file);
+        this.document_name = file.name;
+        this.document_type = file.type
+
+
       } else if (file.type === 'application/msword' || file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
         this.readDocxFile(file);
       } else if (file.type === 'text/plain') {
@@ -85,9 +82,6 @@ export class UploadFilesComponent {
       }
     }
   }
- 
-
-
   // Read and parse text files
   readTextFile(file: File) {
     const reader = new FileReader();
@@ -107,16 +101,12 @@ export class UploadFilesComponent {
         .then((result) => {
           // Extract the text from the HTML result
           let docContent = result.value;
-
-
           // Handle paragraphs in DOCX and preserve line breaks
           docContent = docContent.replace(/<\/p>/g, '<br/>'); // Replace end of paragraphs with line breaks
           docContent = docContent.replace(/<p[^>]*>/g, ''); // Remove opening <p> tags
-
-
           // Ensure we're displaying the content in a paginated manner
           this.fileContent = docContent;
-          this.currentPage=1
+          this.currentPage = 1
           this.paginateText(); // Paginate DOCX content
         })
         .catch((err) => console.error('Error converting DOCX:', err));
@@ -142,7 +132,7 @@ export class UploadFilesComponent {
 
     let chunk = '';
     this.textChunks = []; // Clear previous chunks
-    this.currentPage=1
+    this.currentPage = 1
 
 
     allLines.forEach((line, index) => {
@@ -164,8 +154,6 @@ export class UploadFilesComponent {
       this.currentPage++;
     }
   }
-
-
   // Go to the previous page
   previousPage() {
     if (this.currentPage > 1) {
@@ -190,26 +178,16 @@ export class UploadFilesComponent {
       this.selectedText = ''; // Reset selected text after adding it
     }
   }
-
-
   // Reset the selection (if needed for UX improvements)
   resetSelection() {
     this.selectedText = '';
   }
-
-
   removeSelectedContent(index: number) {
     this.selectedContents.splice(index, 1);
   }
-
-
- 
- 
-
-
   download() {
     const selectedText = this.selectedContents.filter((_, index) => this.selectedItems[index]);
-   
+
     if (selectedText.length === 0) {
       alert("Please select at least one item.");
       return;
@@ -233,7 +211,7 @@ export class UploadFilesComponent {
 
   downloadsummarized() {
     const selectedText = this.selectedContents.filter((_, index) => this.selectedItems[index]);
-   
+
     if (selectedText.length === 0) {
       alert("Please select at least one item.");
       return;
@@ -260,7 +238,7 @@ export class UploadFilesComponent {
   generatePDF(content: string) {
     import('jspdf').then(jsPDF => {
       const doc = new jsPDF.default();
-     
+
       doc.text(content, 10, 10);
       doc.save('selected-content.pdf');
     });
@@ -272,15 +250,15 @@ export class UploadFilesComponent {
       alert("Please select a summary level and ensure content is selected!");
       return;
     }
- 
+
     // Combine selected contents into a single text block
     const textToSummarize = this.selectedContents.join("\n");
- 
+
     // Format the chatbot query correctly
     const summaryPrompt = `Give me ${this.selectedSummaryLevel} paragraph on ${textToSummarize}`;
     console.log(summaryPrompt);
-   
- 
+
+
     // Send the request to the chatbot API
     this.http.post<{ response: string }>("http://localhost:3001/generate-summary", {
       model: "qwen2.5.0.5b", // Change if using a different model in Ollama
@@ -292,7 +270,7 @@ export class UploadFilesComponent {
           this.summarizedContent = response.response; // ✅ Store the chatbot response
           console.log("Summarized Content:", this.summarizedContent);
           console.log(this.summarizeContent.length);
-         
+
         } else {
           console.error("Invalid response format:", response);
         }
@@ -305,23 +283,11 @@ export class UploadFilesComponent {
   isAnyContentSelected(): boolean {
     return this.selectedItems.some(item => item); // Returns true if any checkbox is checked
   }
- 
- 
-  cropping: boolean = false;
-  startX: number = 0;
-  startY: number = 0;
-  width: number = 0;
-  height: number = 0;
 
 
 
 
-  croppedImageSrc: string = ''; // For the cropped image
 
-
-  img: HTMLImageElement = new Image();
- 
- 
 
 
   ngAfterViewInit() {
@@ -336,7 +302,7 @@ export class UploadFilesComponent {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
   }
- 
+
 
 
   handleImageUpload(file: File) {
@@ -437,8 +403,8 @@ export class UploadFilesComponent {
         croppedCtx.drawImage(canvas, this.startX, this.startY, this.width, this.height, 0, 0, this.width, this.height);
         this.croppedImageSrc = croppedCanvas.toDataURL();
         this.imageUrl = croppedCanvas.toDataURL('image/png'); // Update preview with cropped image
-      this.extractTextFromImage(this.croppedImageSrc)
-       
+        this.extractTextFromImage(this.croppedImageSrc)
+
       }
     }
 
@@ -468,25 +434,44 @@ export class UploadFilesComponent {
 
 
 
+  addtocouch() {
+    this.generateuuid();
+    console.log(this.documentid);
 
+    const document_data = {
+      _id: this.documentid,
+      data: {
+        userid: "user_000_9876543212",
+        uploaded_document_name: this.document_name,
+        summarized_document_name: `summary-${this.document_name}`,
+        date: this.onlyDate,
+        summarized_document_content: this.summarizedContent,  // Summarized document content
+        _attachments: {
+          [this.document_name]: {
+            content_type: this.document_type,  // MIME type of the attachment
+            data: this.base64String
 
-  addtocouch(){
-    const document_data={
-      _id: this.documentid,  // Unique identifier for the document           // Revision number (CouchDB will manage this)
-      userid: "user_id_456",    // User ID associated with the document
-      uploaded_document_name: this.document_name,  // Name of the uploaded document
- // The actual document content (Base64 encoded)
-      summarized_document_name: "summarized_document.txt",  // Name of the summarized document
-      summarized_document_content: "Summarized text content of the document",  // Summarized document content
-      _attachments: {
-        uploaded_document: {
-          content_type: this.document_type,  // MIME type of the attachment
-          data: "Base64 encoded document content"  // Base64 encoded attachment content
-        }
+            // Base64 encoded attachment content
+          }
+        },
+        type: "documents"
       }
-   
+    }
+    console.log(this.base64String);
+    if (this.document_name && this.summarizedContent) {
+      console.log("inside the add");
 
+      this.couch.add_document(document_data).subscribe({
+        next: (response) => {
+          alert("document_data added successfully");
+          console.log("hello");
 
+          console.log(response);
+        },
+        error: (error) => {
+          alert("ooops! document_data is not added!");
+        }
+      })
     }
   }
 
